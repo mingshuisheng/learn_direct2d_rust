@@ -14,6 +14,12 @@ fn main() {
     let style3 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_BEVEL, 0.0);
     let style4 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER_OR_BEVEL, 0.0);
 
+    let miter_limit = 1.2;
+    let style5 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER, miter_limit);
+    let style6 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_ROUND, miter_limit);
+    let style7 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_BEVEL, miter_limit);
+    let style8 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER_OR_BEVEL, miter_limit);
+
     graphic.draw_and_save((640, 480), w!("output.png"), |ctx| unsafe {
         ctx.Clear(Some(&D2D1_COLOR_F {
             r: 1.0,
@@ -38,11 +44,16 @@ fn main() {
 
         let stroke_width = 20.0;
         let x_offset = 150.0;
-        let y_offset = 0.0;
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style1, x_offset * 0.0, y_offset);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style2, x_offset * 1.0, y_offset);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style3, x_offset * 2.0, y_offset);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style4, x_offset * 3.0, y_offset);
+        let y_offset = 150.0;
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style1, x_offset * 0.0, 0.0);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style2, x_offset * 1.0, 0.0);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style3, x_offset * 2.0, 0.0);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style4, x_offset * 3.0, 0.0);
+
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style5, x_offset * 0.0, y_offset);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style6, x_offset * 1.0, y_offset);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style7, x_offset * 2.0, y_offset);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style8, x_offset * 3.0, y_offset);
     });
 }
 
