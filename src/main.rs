@@ -1,6 +1,6 @@
 use windows::core::{IntoParam, w};
+use windows::Win32::Graphics::Direct2D::{D2D1_DASH_STYLE_SOLID, D2D1_LINE_JOIN, D2D1_LINE_JOIN_MITER, D2D1_LINE_JOIN_MITER_OR_BEVEL, D2D1_STROKE_STYLE_PROPERTIES, ID2D1Brush, ID2D1DeviceContext, ID2D1Factory1, ID2D1StrokeStyle};
 use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D_RECT_F};
-use windows::Win32::Graphics::Direct2D::{D2D1_CAP_STYLE_ROUND, D2D1_CAP_STYLE_SQUARE, D2D1_CAP_STYLE_TRIANGLE, D2D1_DASH_STYLE_DASH, D2D1_DASH_STYLE_SOLID, D2D1_LINE_JOIN, D2D1_LINE_JOIN_BEVEL, D2D1_LINE_JOIN_MITER, D2D1_LINE_JOIN_MITER_OR_BEVEL, D2D1_LINE_JOIN_ROUND, D2D1_STROKE_STYLE_PROPERTIES, ID2D1Brush, ID2D1DeviceContext, ID2D1Factory1, ID2D1StrokeStyle};
 
 mod d2d;
 mod graphic;
@@ -10,14 +10,10 @@ fn main() {
     let graphic = graphic::Graphic::new();
 
     let style1 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER, 0.0);
-    let style2 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_ROUND, 0.0);
-    let style3 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_BEVEL, 0.0);
     let style4 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER_OR_BEVEL, 0.0);
 
-    let miter_limit = 1.2;
+    let miter_limit = 1.0;
     let style5 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER, miter_limit);
-    let style6 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_ROUND, miter_limit);
-    let style7 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_BEVEL, miter_limit);
     let style8 = create_stroke_style(&graphic.d2d_factory, D2D1_LINE_JOIN_MITER_OR_BEVEL, miter_limit);
 
     graphic.draw_and_save((640, 480), w!("output.png"), |ctx| unsafe {
@@ -46,14 +42,10 @@ fn main() {
         let x_offset = 150.0;
         let y_offset = 150.0;
         draw_rectangle(ctx, &rect, &brush, stroke_width, &style1, x_offset * 0.0, 0.0);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style2, x_offset * 1.0, 0.0);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style3, x_offset * 2.0, 0.0);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style4, x_offset * 3.0, 0.0);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style4, x_offset * 1.0, 0.0);
 
         draw_rectangle(ctx, &rect, &brush, stroke_width, &style5, x_offset * 0.0, y_offset);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style6, x_offset * 1.0, y_offset);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style7, x_offset * 2.0, y_offset);
-        draw_rectangle(ctx, &rect, &brush, stroke_width, &style8, x_offset * 3.0, y_offset);
+        draw_rectangle(ctx, &rect, &brush, stroke_width, &style8, x_offset * 1.0, y_offset);
     });
 }
 
