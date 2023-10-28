@@ -1,6 +1,6 @@
 use windows::core::w;
-use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D_POINT_2F};
-use windows::Win32::Graphics::Direct2D::D2D1_ELLIPSE;
+use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D_RECT_F};
+use windows::Win32::Graphics::Direct2D::D2D1_ROUNDED_RECT;
 
 mod d2d;
 mod graphic;
@@ -9,7 +9,7 @@ fn main() {
     d2d::init_com();
     let graphic = graphic::Graphic::new();
 
-    graphic.draw_and_save((640, 480), w!("output.png"), |ctx| unsafe {
+    graphic.draw_and_save((640, 680), w!("output.png"), |ctx| unsafe {
         ctx.Clear(Some(&D2D1_COLOR_F{
             r: 1.0,
             g: 1.0,
@@ -26,17 +26,18 @@ fn main() {
         }, None).unwrap();
 
         //RoundedRectangle
-        //Ellipse
-
-        let e = D2D1_ELLIPSE{
-            point: D2D_POINT_2F{
-                x: 100.0,
-                y: 100.0
+        let round_rect = D2D1_ROUNDED_RECT{
+            rect: D2D_RECT_F{
+                left: 100.0,
+                top: 100.0,
+                right: 400.0,
+                bottom: 500.0,
             },
-            radiusX: 20.0,
-            radiusY: 30.0,
+            radiusX: (400.0 - 100.0) / 2.0,
+            radiusY: (500.0 - 100.0) / 2.0,
         };
 
-        ctx.FillEllipse(&e, &brush);
+        ctx.DrawRoundedRectangle(&round_rect, &brush, 10.0, None);
+        // ctx.FillRoundedRectangle(&round_rect, &brush);
     });
 }
