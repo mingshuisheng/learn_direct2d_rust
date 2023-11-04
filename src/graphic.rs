@@ -10,7 +10,7 @@ use windows::Win32::System::Com::STGC_DEFAULT;
 use crate::d2d;
 
 pub struct Graphic {
-    d2d_factory: ID2D1Factory1,
+    pub d2d_factory: ID2D1Factory1,
     wic_factory: IWICImagingFactory2,
     d3d_device: ID3D11Device,
     d2d_device: ID2D1Device,
