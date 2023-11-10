@@ -1,5 +1,6 @@
 use windows::core::w;
-use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_BEGIN_HOLLOW, D2D1_FIGURE_END_CLOSED, D2D1_FIGURE_END_OPEN, D2D_POINT_2F};
+use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_END_OPEN, D2D_POINT_2F, D2D_SIZE_F};
+use windows::Win32::Graphics::Direct2D::{D2D1_ARC_SEGMENT, D2D1_ELLIPSE};
 
 mod d2d;
 mod graphic;
@@ -12,48 +13,27 @@ fn main() {
         let geometry = graphic.d2d_factory.CreatePathGeometry().unwrap();
         let sink = geometry.Open().unwrap();
         sink.BeginFigure(D2D_POINT_2F{
-            x: 320.0,
-            y: 80.0,
+            x: 200.0,
+            y: 200.0,
         }, D2D1_FIGURE_BEGIN_FILLED);
 
-        sink.AddLine(D2D_POINT_2F{
-            x: 534.0,
-            y: 400.0,
+        sink.AddArc(&D2D1_ARC_SEGMENT{
+            point: D2D_POINT_2F{
+                x: 300.0,
+                y: 300.0 + 50.0,
+            },
+            size: D2D_SIZE_F{
+                width: 100.0,
+                height: 100.0
+            },
+            // rotationAngle: 0.0,
+            // sweepDirection: Default::default(),
+            // arcSize: Default::default(),
+            ..Default::default()
         });
 
-        sink.AddLine(D2D_POINT_2F{
-            x: 106.0,
-            y: 400.0,
-        });
-
-        // sink.AddLine(D2D_POINT_2F{
-        //     x: 320.0,
-        //     y: 80.0,
-        // });
 
         sink.EndFigure(D2D1_FIGURE_END_OPEN);
-
-        sink.BeginFigure(D2D_POINT_2F{
-            x: 10.0,
-            y: 10.0,
-        }, D2D1_FIGURE_BEGIN_HOLLOW);
-
-        sink.AddLine(D2D_POINT_2F{
-            x: 40.0,
-            y: 10.0,
-        });
-
-        sink.AddLine(D2D_POINT_2F{
-            x: 40.0,
-            y: 40.0,
-        });
-
-        sink.AddLine(D2D_POINT_2F{
-            x: 10.0,
-            y: 40.0,
-        });
-
-        sink.EndFigure(D2D1_FIGURE_END_CLOSED);
 
         sink.Close().unwrap();
         geometry
@@ -73,13 +53,27 @@ fn main() {
             ..Default::default()
         }, None).unwrap();
 
-        let red_brush = ctx.CreateSolidColorBrush(&D2D1_COLOR_F {
-            r: 1.0,
+        // let red_brush = ctx.CreateSolidColorBrush(&D2D1_COLOR_F {
+        //     r: 1.0,
+        //     a: 1.0,
+        //     ..Default::default()
+        // }, None).unwrap();
+
+        let blue_brush = ctx.CreateSolidColorBrush(&D2D1_COLOR_F {
+            b: 1.0,
             a: 1.0,
             ..Default::default()
         }, None).unwrap();
 
+        ctx.DrawEllipse(&D2D1_ELLIPSE{
+            point: D2D_POINT_2F{
+                x: 300.0 - 14.0,
+                y: 200.0 + 51.0,
+            },
+            radiusX: 100.0,
+            radiusY: 100.0,
+        }, &blue_brush, 10.0, None);
         ctx.DrawGeometry(&geometry, &green_brush, 10.0, None);
-        ctx.FillGeometry(&geometry, &red_brush, None);
+        // ctx.FillGeometry(&geometry, &red_brush, None);
     });
 }
