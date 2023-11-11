@@ -1,6 +1,6 @@
 use windows::core::w;
 use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_END_OPEN, D2D_POINT_2F, D2D_SIZE_F};
-use windows::Win32::Graphics::Direct2D::{D2D1_ARC_SEGMENT, D2D1_ELLIPSE};
+use windows::Win32::Graphics::Direct2D::{D2D1_ARC_SEGMENT, D2D1_ARC_SIZE_LARGE, D2D1_ARC_SIZE_SMALL, D2D1_ELLIPSE, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE};
 
 mod d2d;
 mod graphic;
@@ -27,8 +27,8 @@ fn main() {
                 height: 100.0
             },
             // rotationAngle: 0.0,
-            // sweepDirection: Default::default(),
-            // arcSize: Default::default(),
+            sweepDirection: D2D1_SWEEP_DIRECTION_CLOCKWISE,
+            arcSize: D2D1_ARC_SIZE_LARGE,
             ..Default::default()
         });
 
