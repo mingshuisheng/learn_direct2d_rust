@@ -1,5 +1,6 @@
 use windows::core::w;
-use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_BEGIN_HOLLOW, D2D1_FIGURE_END_CLOSED, D2D1_FIGURE_END_OPEN, D2D_POINT_2F};
+use windows::Win32::Graphics::Direct2D::Common::{D2D1_BEZIER_SEGMENT, D2D1_COLOR_F, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_BEGIN_HOLLOW, D2D1_FIGURE_END_CLOSED, D2D1_FIGURE_END_OPEN, D2D_POINT_2F};
+use windows::Win32::Graphics::Direct2D::D2D1_QUADRATIC_BEZIER_SEGMENT;
 
 mod d2d;
 mod graphic;
@@ -11,49 +12,48 @@ fn main() {
     let geometry = unsafe {
         let geometry = graphic.d2d_factory.CreatePathGeometry().unwrap();
         let sink = geometry.Open().unwrap();
-        sink.BeginFigure(D2D_POINT_2F{
-            x: 320.0,
-            y: 80.0,
+        sink.BeginFigure(D2D_POINT_2F {
+            x: 100.0,
+            y: 400.0,
         }, D2D1_FIGURE_BEGIN_FILLED);
 
-        sink.AddLine(D2D_POINT_2F{
-            x: 534.0,
-            y: 400.0,
+        sink.AddBezier(&D2D1_BEZIER_SEGMENT {
+            point1: D2D_POINT_2F {
+                x: 200.0,
+                y: 300.0,
+            },
+            point2: D2D_POINT_2F {
+                x: 100.0,
+                y: 100.0,
+            },
+            point3: D2D_POINT_2F {
+                x: 200.0,
+                y: 100.0,
+            },
         });
 
-        sink.AddLine(D2D_POINT_2F{
-            x: 106.0,
-            y: 400.0,
+        sink.AddQuadraticBezier(&D2D1_QUADRATIC_BEZIER_SEGMENT {
+            point1: D2D_POINT_2F {
+                x: 600.0,
+                y: 200.0,
+            },
+            point2: D2D_POINT_2F {
+                x: 500.0,
+                y: 400.0,
+            },
         });
 
-        // sink.AddLine(D2D_POINT_2F{
-        //     x: 320.0,
-        //     y: 80.0,
-        // });
+        // sink.AddLines();
+        // sink.AddBeziers();
+        // sink.AddQuadraticBeziers();
+        // //
+        // sink.AddLine(p1);
+        // sink.AddLine(p2);
+        // sink.AddLine(p3);
+        // // // 等价于
+        // sink.AddLines(&[p1, p2, p3]);
 
         sink.EndFigure(D2D1_FIGURE_END_OPEN);
-
-        sink.BeginFigure(D2D_POINT_2F{
-            x: 10.0,
-            y: 10.0,
-        }, D2D1_FIGURE_BEGIN_HOLLOW);
-
-        sink.AddLine(D2D_POINT_2F{
-            x: 40.0,
-            y: 10.0,
-        });
-
-        sink.AddLine(D2D_POINT_2F{
-            x: 40.0,
-            y: 40.0,
-        });
-
-        sink.AddLine(D2D_POINT_2F{
-            x: 10.0,
-            y: 40.0,
-        });
-
-        sink.EndFigure(D2D1_FIGURE_END_CLOSED);
 
         sink.Close().unwrap();
         geometry
@@ -73,13 +73,13 @@ fn main() {
             ..Default::default()
         }, None).unwrap();
 
-        let red_brush = ctx.CreateSolidColorBrush(&D2D1_COLOR_F {
-            r: 1.0,
-            a: 1.0,
-            ..Default::default()
-        }, None).unwrap();
-
         ctx.DrawGeometry(&geometry, &green_brush, 10.0, None);
-        ctx.FillGeometry(&geometry, &red_brush, None);
+
+        // let red_brush = ctx.CreateSolidColorBrush(&D2D1_COLOR_F {
+        //     r: 1.0,
+        //     a: 1.0,
+        //     ..Default::default()
+        // }, None).unwrap();
+        // ctx.FillGeometry(&geometry, &red_brush, None);
     });
 }
