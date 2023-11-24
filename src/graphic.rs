@@ -1,17 +1,18 @@
-use windows::Win32::Graphics::Direct2D::{D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1_BITMAP_OPTIONS_TARGET, D2D1_BITMAP_PROPERTIES1, ID2D1Bitmap1, ID2D1Device, ID2D1DeviceContext, ID2D1Factory1};
-use windows::Win32::Graphics::Direct3D11::ID3D11Device;
-use windows::Win32::Graphics::Imaging::D2D::IWICImagingFactory2;
 use windows::core::PCWSTR;
-use windows::Win32::Foundation::GENERIC_WRITE;
-use windows::Win32::Graphics::Direct2D::Common::{D2D1_ALPHA_MODE_IGNORE, D2D1_PIXEL_FORMAT, D2D_SIZE_U};
+use windows::Win32::Foundation::{GENERIC_READ, GENERIC_WRITE};
+use windows::Win32::Graphics::Direct2D::{D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1_BITMAP_OPTIONS_TARGET, D2D1_BITMAP_PROPERTIES1, ID2D1Bitmap1, ID2D1Device, ID2D1DeviceContext, ID2D1Factory1};
+use windows::Win32::Graphics::Direct2D::Common::{D2D1_ALPHA_MODE_PREMULTIPLIED, D2D1_PIXEL_FORMAT, D2D_SIZE_U};
+use windows::Win32::Graphics::Direct3D11::ID3D11Device;
 use windows::Win32::Graphics::Dxgi::Common::DXGI_FORMAT_B8G8R8A8_UNORM;
-use windows::Win32::Graphics::Imaging::{GUID_ContainerFormatPng, WICBitmapEncoderNoCache};
+use windows::Win32::Graphics::Imaging::{GUID_ContainerFormatPng, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, WICBitmapEncoderNoCache, WICBitmapPaletteTypeMedianCut, WICDecodeMetadataCacheOnLoad};
+use windows::Win32::Graphics::Imaging::D2D::IWICImagingFactory2;
 use windows::Win32::System::Com::STGC_DEFAULT;
+
 use crate::d2d;
 
 pub struct Graphic {
-    d2d_factory: ID2D1Factory1,
-    wic_factory: IWICImagingFactory2,
+    pub d2d_factory: ID2D1Factory1,
+    pub wic_factory: IWICImagingFactory2,
     d3d_device: ID3D11Device,
     d2d_device: ID2D1Device,
     device_context: ID2D1DeviceContext,
@@ -46,7 +47,7 @@ impl Graphic {
         let props = D2D1_BITMAP_PROPERTIES1 {
             pixelFormat: D2D1_PIXEL_FORMAT {
                 format: DXGI_FORMAT_B8G8R8A8_UNORM,
-                alphaMode: D2D1_ALPHA_MODE_IGNORE,
+                alphaMode: D2D1_ALPHA_MODE_PREMULTIPLIED,
             },
             dpiX: 96.0,
             dpiY: 96.0,
@@ -97,6 +98,16 @@ impl Graphic {
             frame_encoder.Commit().unwrap();
             encoder.Commit().unwrap();
             stream.Commit(STGC_DEFAULT).unwrap();
+        }
+    }
+
+    pub fn load_image(&self,  filename: PCWSTR) -> ID2D1Bitmap1 {
+        unsafe {
+            let decoder = self.wic_factory.CreateDecoderFromFilename(filename, None, GENERIC_READ, WICDecodeMetadataCacheOnLoad).unwrap();
+            let frame = decoder.GetFrame(0).unwrap();
+            let converter = self.wic_factory.CreateFormatConverter().unwrap();
+            converter.Initialize(&frame, &GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, None, 0.0, WICBitmapPaletteTypeMedianCut).unwrap();
+            self.device_context.CreateBitmapFromWicBitmap2(&converter, None).unwrap()
         }
     }
 }

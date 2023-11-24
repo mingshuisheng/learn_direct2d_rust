@@ -1,8 +1,8 @@
+use windows::core::ComInterface;
 use windows::Win32::Graphics::Direct2D::{D2D1_DEVICE_CONTEXT_OPTIONS_NONE, D2D1_FACTORY_TYPE_SINGLE_THREADED, D2D1_UNIT_MODE_DIPS, D2D1CreateFactory, ID2D1Device, ID2D1DeviceContext, ID2D1Factory1};
+use windows::Win32::Graphics::Direct3D::{D3D_DRIVER_TYPE, D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_WARP};
 use windows::Win32::Graphics::Direct3D11::{D3D11_CREATE_DEVICE_BGRA_SUPPORT, D3D11_CREATE_DEVICE_DEBUG, D3D11_SDK_VERSION, D3D11CreateDevice, ID3D11Device};
 use windows::Win32::Graphics::Dxgi::IDXGIDevice;
-use windows::Win32::Graphics::Direct3D::{D3D_DRIVER_TYPE, D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_WARP};
-use windows::core::ComInterface;
 use windows::Win32::Graphics::Imaging::CLSID_WICImagingFactory;
 use windows::Win32::Graphics::Imaging::D2D::IWICImagingFactory2;
 use windows::Win32::System::Com::{CLSCTX_INPROC_SERVER, CoCreateInstance, COINIT_MULTITHREADED, CoInitializeEx};

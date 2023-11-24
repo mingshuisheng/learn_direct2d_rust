@@ -1,4 +1,4 @@
 /target
 .idea
 .vscode
-output.png
+*.png
