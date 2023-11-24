@@ -2,10 +2,10 @@ use windows::Win32::Graphics::Direct2D::{D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1_B
 use windows::Win32::Graphics::Direct3D11::ID3D11Device;
 use windows::Win32::Graphics::Imaging::D2D::IWICImagingFactory2;
 use windows::core::PCWSTR;
-use windows::Win32::Foundation::GENERIC_WRITE;
+use windows::Win32::Foundation::{GENERIC_READ, GENERIC_WRITE};
 use windows::Win32::Graphics::Direct2D::Common::{D2D1_ALPHA_MODE_IGNORE, D2D1_PIXEL_FORMAT, D2D_SIZE_U};
 use windows::Win32::Graphics::Dxgi::Common::DXGI_FORMAT_B8G8R8A8_UNORM;
-use windows::Win32::Graphics::Imaging::{GUID_ContainerFormatPng, WICBitmapEncoderNoCache};
+use windows::Win32::Graphics::Imaging::{GUID_ContainerFormatPng, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, WICBitmapEncoderNoCache, WICBitmapPaletteTypeMedianCut, WICDecodeMetadataCacheOnLoad};
 use windows::Win32::System::Com::STGC_DEFAULT;
 use crate::d2d;
 
@@ -97,6 +97,16 @@ impl Graphic {
             frame_encoder.Commit().unwrap();
             encoder.Commit().unwrap();
             stream.Commit(STGC_DEFAULT).unwrap();
+        }
+    }
+
+    pub fn load_image(&self,  filename: PCWSTR) -> ID2D1Bitmap1 {
+        unsafe {
+            let decoder = self.wic_factory.CreateDecoderFromFilename(filename, None, GENERIC_READ, WICDecodeMetadataCacheOnLoad).unwrap();
+            let frame = decoder.GetFrame(0).unwrap();
+            let converter = self.wic_factory.CreateFormatConverter().unwrap();
+            converter.Initialize(&frame, &GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, None, 0.0, WICBitmapPaletteTypeMedianCut).unwrap();
+            self.device_context.CreateBitmapFromWicBitmap2(&converter, None).unwrap()
         }
     }
 }
