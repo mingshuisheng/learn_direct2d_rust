@@ -1,6 +1,9 @@
+use std::iter::once;
+
 use windows::core::w;
-use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D_POINT_2F};
-use windows::Win32::Graphics::Direct2D::{D2D1_CAP_STYLE_FLAT, D2D1_CAP_STYLE_ROUND, D2D1_CAP_STYLE_SQUARE, D2D1_CAP_STYLE_TRIANGLE, D2D1_DASH_STYLE_CUSTOM, D2D1_DASH_STYLE_DASH, D2D1_DASH_STYLE_DASH_DOT, D2D1_DASH_STYLE_DASH_DOT_DOT, D2D1_DASH_STYLE_DOT, D2D1_STROKE_STYLE_PROPERTIES};
+use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D_RECT_F};
+use windows::Win32::Graphics::Direct2D::D2D1_DRAW_TEXT_OPTIONS_NO_SNAP;
+use windows::Win32::Graphics::DirectWrite::{DWRITE_FACTORY_TYPE_SHARED, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_WEIGHT_ULTRA_BLACK, DWRITE_MEASURING_MODE_NATURAL, DWriteCreateFactory, IDWriteFactory2};
 
 mod d2d;
 mod graphic;
@@ -8,31 +11,8 @@ mod graphic;
 fn main() {
     d2d::init_com();
     let graphic = graphic::Graphic::new();
-
-    let style = unsafe {
-        graphic.d2d_factory.CreateStrokeStyle(&D2D1_STROKE_STYLE_PROPERTIES {
-            // startCap: D2D1_CAP_STYLE_ROUND,
-            // endCap: D2D1_CAP_STYLE_TRIANGLE,
-            // dashCap: D2D1_CAP_STYLE_SQUARE,
-            // lineJoin: ,
-            // miterLimit: ,
-            dashStyle: D2D1_DASH_STYLE_CUSTOM,
-            // dashOffset: 1.0, //比例,倍数，strokeWidth * 1.5
-            ..Default::default()
-        }, Some(&[0.0, 2.0])).unwrap()
-    };
-
-    let style2 = unsafe {
-        graphic.d2d_factory.CreateStrokeStyle(&D2D1_STROKE_STYLE_PROPERTIES {
-            // startCap: ,
-            // endCap: ,
-            // dashCap: ,
-            // lineJoin: ,
-            // miterLimit: ,
-            // dashStyle: D2D1_DASH_STYLE_DASH,
-            // dashOffset: ,
-            ..Default::default()
-        }, None).unwrap()
+    let write_factory: IDWriteFactory2 = unsafe {
+        DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED).unwrap()
     };
 
     graphic.draw_and_save((640, 480), w!("output.png"), |ctx| unsafe {
@@ -43,14 +23,25 @@ fn main() {
             a: 1.0,
         }));
 
-        let start = D2D_POINT_2F {
-            x: 100.0,
-            y: 100.0,
-        };
+        let text = "Hello,World!".to_string();
+        let text_vec = text.encode_utf16().chain(once(0)).collect::<Vec<u16>>();
+        let font_family = w!("微软雅黑");
+        let font_size = 40.0;
+        let text_format = write_factory.CreateTextFormat(
+            font_family,
+            None,
+            DWRITE_FONT_WEIGHT_ULTRA_BLACK,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            font_size,
+            w!(""),
+        ).unwrap();
 
-        let end = D2D_POINT_2F {
-            x: 600.0,
-            y: 100.0,
+        let rect = D2D_RECT_F {
+            left: 0.0,
+            top: 0.0,
+            right: 640.0,
+            bottom: 480.0,
         };
 
         let brush = ctx.CreateSolidColorBrush(&D2D1_COLOR_F {
@@ -60,19 +51,6 @@ fn main() {
             a: 1.0,
         }, None).unwrap();
 
-        ctx.DrawLine(start, end, &brush, 10.0, &style);
-
-        let start = D2D_POINT_2F {
-            x: 100.0,
-            y: 100.0 + 20.0,
-        };
-
-        let end = D2D_POINT_2F {
-            x: 600.0,
-            y: 100.0 + 20.0,
-        };
-
-        //strokeWidth * 0.5
-        ctx.DrawLine(start, end, &brush, 10.0, &style2);
+        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_NO_SNAP, DWRITE_MEASURING_MODE_NATURAL);
     });
 }

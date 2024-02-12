@@ -18,5 +18,6 @@ features = [
     "Win32_Graphics_Direct3D",
     "Win32_Graphics_Direct3D11",
     "Win32_Graphics_Imaging_D2D",
-    "Foundation_Numerics"
+    "Foundation_Numerics",
+    "Win32_Graphics_DirectWrite"
 ]
