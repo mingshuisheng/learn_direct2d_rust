@@ -2,8 +2,8 @@ use std::iter::once;
 
 use windows::core::w;
 use windows::Win32::Graphics::Direct2D::Common::{D2D1_COLOR_F, D2D_RECT_F};
-use windows::Win32::Graphics::Direct2D::{D2D1_DRAW_TEXT_OPTIONS_CLIP, D2D1_DRAW_TEXT_OPTIONS_DISABLE_COLOR_BITMAP_SNAPPING, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT, D2D1_DRAW_TEXT_OPTIONS_NO_SNAP, D2D1_DRAW_TEXT_OPTIONS_NONE};
-use windows::Win32::Graphics::DirectWrite::{DWRITE_FACTORY_TYPE_SHARED, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_WEIGHT_ULTRA_BLACK, DWRITE_MEASURING_MODE_NATURAL, DWRITE_WORD_WRAPPING_NO_WRAP, DWriteCreateFactory, IDWriteFactory2};
+use windows::Win32::Graphics::Direct2D::D2D1_DRAW_TEXT_OPTIONS_NONE;
+use windows::Win32::Graphics::DirectWrite::{DWRITE_FACTORY_TYPE_SHARED, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_WEIGHT_ULTRA_BLACK, DWRITE_MEASURING_MODE_GDI_CLASSIC, DWRITE_MEASURING_MODE_GDI_NATURAL, DWRITE_MEASURING_MODE_NATURAL, DWRITE_WORD_WRAPPING_NO_WRAP, DWriteCreateFactory, IDWriteFactory2};
 
 mod d2d;
 mod graphic;
@@ -61,7 +61,7 @@ fn main() {
         ).unwrap()
     };
 
-    graphic.draw_and_save((640, 480), w!("D2D1_DRAW_TEXT_OPTIONS_NONE.png"), |ctx| unsafe {
+    graphic.draw_and_save((640, 480), w!("DWRITE_MEASURING_MODE_NATURAL.png"), |ctx| unsafe {
         ctx.Clear(Some(&graphic_color));
         //text
         let brush = ctx.CreateSolidColorBrush(&text_color, None).unwrap();
@@ -73,54 +73,27 @@ fn main() {
         ctx.DrawRectangle(&rect, &brush, 2.0, None);
     });
 
-    graphic.draw_and_save((640, 480), w!("D2D1_DRAW_TEXT_OPTIONS_CLIP.png"), |ctx| unsafe {
+    graphic.draw_and_save((640, 480), w!("DWRITE_MEASURING_MODE_GDI_CLASSIC.png"), |ctx| unsafe {
         ctx.Clear(Some(&graphic_color));
         //text
         let brush = ctx.CreateSolidColorBrush(&text_color, None).unwrap();
         text_format.SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP).unwrap();
-        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_CLIP, DWRITE_MEASURING_MODE_NATURAL);
+        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_NONE, DWRITE_MEASURING_MODE_GDI_CLASSIC);
 
         //border
         let brush = ctx.CreateSolidColorBrush(&border_color, None).unwrap();
         ctx.DrawRectangle(&rect, &brush, 2.0, None);
     });
 
-    graphic.draw_and_save((640, 480), w!("D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT.png"), |ctx| unsafe {
+    graphic.draw_and_save((640, 480), w!("DWRITE_MEASURING_MODE_GDI_NATURAL.png"), |ctx| unsafe {
         ctx.Clear(Some(&graphic_color));
         //text
         let brush = ctx.CreateSolidColorBrush(&text_color, None).unwrap();
         text_format.SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP).unwrap();
-        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT, DWRITE_MEASURING_MODE_NATURAL);
+        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_NONE, DWRITE_MEASURING_MODE_GDI_NATURAL);
 
         //border
         let brush = ctx.CreateSolidColorBrush(&border_color, None).unwrap();
         ctx.DrawRectangle(&rect, &brush, 2.0, None);
     });
-
-
-    graphic.draw_and_save((640, 480), w!("D2D1_DRAW_TEXT_OPTIONS_NO_SNAP.png"), |ctx| unsafe {
-        ctx.Clear(Some(&graphic_color));
-        //text
-        let brush = ctx.CreateSolidColorBrush(&text_color, None).unwrap();
-        text_format.SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP).unwrap();
-        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_NO_SNAP, DWRITE_MEASURING_MODE_NATURAL);
-
-        //border
-        let brush = ctx.CreateSolidColorBrush(&border_color, None).unwrap();
-        ctx.DrawRectangle(&rect, &brush, 2.0, None);
-    });
-
-
-    graphic.draw_and_save((640, 480), w!("D2D1_DRAW_TEXT_OPTIONS_DISABLE_COLOR_BITMAP_SNAPPING.png"), |ctx| unsafe {
-        ctx.Clear(Some(&graphic_color));
-        //text
-        let brush = ctx.CreateSolidColorBrush(&text_color, None).unwrap();
-        text_format.SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP).unwrap();
-        ctx.DrawText(&text_vec, &text_format, &rect, &brush, D2D1_DRAW_TEXT_OPTIONS_DISABLE_COLOR_BITMAP_SNAPPING, DWRITE_MEASURING_MODE_NATURAL);
-
-        //border
-        let brush = ctx.CreateSolidColorBrush(&border_color, None).unwrap();
-        ctx.DrawRectangle(&rect, &brush, 2.0, None);
-    });
-
 }
